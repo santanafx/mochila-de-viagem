@@ -14,16 +14,28 @@ form.addEventListener("submit", (evento) => {
   const nome = evento.target.elements["nome"];
   const quantidade = evento.target.elements["quantidade"];
 
+  const existe = itens.find((elemento) => elemento.nome === nome.value); //busca todos os elementos do array itens, na posição nome e pergunta se elemento.nome é igual ao valor do nome
+
   const itemAtual = {
     nome: nome.value,
     quantidade: quantidade.value,
   };
 
-  criaElemento(itemAtual);
+  if (existe) {
+    itemAtual.id = existe.id;
 
-  itens.push(itemAtual);
+    atualizaElemento(itemAtual);
 
-  localStorage.setItem("item", JSON.stringify(itemAtual));
+    itens[existe.id] = itemAtual;
+  } else {
+    itemAtual.id = itens.length;
+
+    criaElemento(itemAtual);
+
+    itens.push(itemAtual);
+  }
+
+  localStorage.setItem("item", JSON.stringify(itens));
 
   nome.value = "";
   quantidade.value = "";
@@ -35,13 +47,15 @@ const criaElemento = (item) => {
 
   const numeroItem = document.createElement("strong");
   numeroItem.innerHTML = item.quantidade;
-
+  numeroItem.dataset.id = item.id;
   novoItem.appendChild(numeroItem);
-  //<li class="item">nome
-  //        <strong>quantidade</strong>
-  //</li>
-  //
+
   novoItem.innerHTML += item.nome;
 
   lista.appendChild(novoItem);
 };
+
+function atualizaElemento(item) {
+  document.querySelector("[data-id='" + item.id + "']").innerHTML =
+    item.quantidade;
+}
